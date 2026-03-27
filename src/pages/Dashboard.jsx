@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { useAuth } from '../contexts/AuthContext'
 import { getStatsDashboard, getTransaksi } from '../lib/supabase'
@@ -12,6 +13,7 @@ const COLORS = ['#2D6A4F', '#E67E22', '#2471A3', '#C0392B', '#8E44AD', '#27AE60'
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [stats, setStats] = useState({ pemasukan: 0, pengeluaran: 0, saldo: 0 })
   const [chartData, setChartData] = useState([])
   const [pieData, setPieData] = useState([])
@@ -106,6 +108,34 @@ export default function Dashboard() {
             <div className="kpi-value" style={{ color: 'var(--blue)' }}>{recentTx.length}</div>
             <div className="kpi-bar" style={{ background: 'var(--blue)' }} />
           </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+          <button
+            className="btn btn-primary"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, fontSize: 14, fontWeight: 700, flex: '1 1 auto', minWidth: 160, maxWidth: 260 }}
+            onClick={() => navigate('/pos')}
+          >
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a1 1 0 000 2h12a1 1 0 100-2H4zM3 8a1 1 0 011-1h12a1 1 0 011 1v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 100 2h4a1 1 0 100-2H8z"/></svg>
+            Buka POS Kasir
+          </button>
+          <button
+            className="btn btn-ghost"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, fontSize: 14, border: '1px solid var(--border)', flex: '1 1 auto', minWidth: 140, maxWidth: 200 }}
+            onClick={() => navigate('/produk')}
+          >
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4zM3 9a1 1 0 000 2h.01a1 1 0 000-2H3zm4 0a1 1 0 000 2h6a1 1 0 000-2H7zm6 0a1 1 0 000 2h.01a1 1 0 000-2H13zM3 14a1 1 0 000 2h.01a1 1 0 000-2H3zm4 0a1 1 0 000 2h6a1 1 0 000-2H7zm6 0a1 1 0 000 2h.01a1 1 0 000-2H13z"/></svg>
+            Kelola Produk
+          </button>
+          <button
+            className="btn btn-ghost"
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, fontSize: 14, border: '1px solid var(--border)', flex: '1 1 auto', minWidth: 140, maxWidth: 200 }}
+            onClick={() => navigate('/transaksi')}
+          >
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/></svg>
+            Catat Transaksi
+          </button>
         </div>
 
         {/* Charts */}

@@ -8,6 +8,8 @@ import Invoice from './pages/Invoice'
 import Kontak from './pages/Kontak'
 import LaporanLabaRugi from './pages/LaporanLabaRugi'
 import Pengaturan from './pages/Pengaturan'
+import POS from './pages/POS'
+import Produk from './pages/Produk'
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -25,6 +27,8 @@ export default function App() {
       <Route path="/auth" element={user ? <Navigate to="/" replace /> : <AuthPage />} />
       <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
         <Route index element={<Dashboard />} />
+        <Route path="pos" element={<POS />} />
+        <Route path="produk" element={<Produk />} />
         <Route path="transaksi" element={<Transaksi />} />
         <Route path="invoice" element={<Invoice />} />
         <Route path="kontak" element={<Kontak />} />
