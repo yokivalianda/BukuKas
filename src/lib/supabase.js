@@ -106,3 +106,89 @@ export const getStatsDashboard = async (userId, tahun) => {
   if (error) throw error
   return data
 }
+
+// ─── PRODUK ───────────────────────────────────────────────────────────────────
+export const getProduk = async (userId) => {
+  const { data, error } = await supabase
+    .from('produk')
+    .select('*')
+    .eq('user_id', userId)
+    .order('nama')
+  if (error) throw error
+  return data
+}
+
+export const tambahProduk = async (produk) => {
+  const { data, error } = await supabase
+    .from('produk')
+    .insert(produk)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export const updateProduk = async (id, updates) => {
+  const { data, error } = await supabase
+    .from('produk')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export const hapusProduk = async (id) => {
+  const { error } = await supabase.from('produk').delete().eq('id', id)
+  if (error) throw error
+}
+
+// ─── POS CHECKOUT ─────────────────────────────────────────────────────────────
+export const posCheckout = async ({ p_user_id, p_total, p_uang_diterima, p_kembalian, p_items }) => {
+  // Simpan transaksi penjualan
+  const { data: tx, error: txError } = await supabase
+    .from('transaksi')
+    .insert({
+      user_id: p_user_id,
+      jenis: 'pemasukan',
+      jumlah: p_total,
+      kategori: 'Penjualan POS',
+      keterangan: `Penjualan ${p_items.length} item`,
+      tanggal: new Date().toISOString().split('T')[0],
+    })
+    .select()
+    .single()
+  if (txError) throw txError
+
+  // Simpan detail item penjualan
+  const itemRows = p_items.map(item => ({
+    user_id: p_user_id,
+    transaksi_id: tx.id,
+    produk_id: item.produk_id,
+    qty: item.qty,
+    harga_satuan: item.harga_satuan,
+    subtotal: item.subtotal,
+  }))
+
+  const { error: itemError } = await supabase.from('pos_item').insert(itemRows)
+  if (itemError) throw itemError
+
+  // Kurangi stok produk
+  for (const item of p_items) {
+    const { data: produk, error: getErr } = await supabase
+      .from('produk')
+      .select('stok')
+      .eq('id', item.produk_id)
+      .single()
+    if (getErr) throw getErr
+
+    const { error: stokErr } = await supabase
+      .from('produk')
+      .update({ stok: produk.stok - item.qty })
+      .eq('id', item.produk_id)
+    if (stokErr) throw stokErr
+  }
+
+  return tx
+}
