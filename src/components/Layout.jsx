@@ -9,15 +9,17 @@ const IcoInvoice = ({ size = 20 }) => <svg width={size} height={size} viewBox="0
 const IcoLaporan = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
 const IcoKontak = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
 const IcoPengaturan = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/></svg>
+const IcoPOS = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a1 1 0 000 2h12a1 1 0 100-2H4zM3 8a1 1 0 011-1h12a1 1 0 011 1v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm5 3a1 1 0 100 2h4a1 1 0 100-2H8z"/></svg>
+const IcoProduk = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4zM3 9a1 1 0 000 2h.01a1 1 0 000-2H3zm4 0a1 1 0 000 2h6a1 1 0 000-2H7zm6 0a1 1 0 000 2h.01a1 1 0 000-2H13zM3 14a1 1 0 000 2h.01a1 1 0 000-2H3zm4 0a1 1 0 000 2h6a1 1 0 000-2H7zm6 0a1 1 0 000 2h.01a1 1 0 000-2H13z"/></svg>
 const IcoMenu = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/></svg>
 const IcoClose = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
 
 // Bottom nav items (5 utama untuk mobile)
 const bottomNavItems = [
   { to: '/', end: true, icon: IcoDashboard, label: 'Dashboard' },
+  { to: '/pos', icon: IcoPOS, label: 'Kasir' },
   { to: '/transaksi', icon: IcoTransaksi, label: 'Transaksi' },
-  { to: '/invoice', icon: IcoInvoice, label: 'Invoice' },
-  { to: '/laporan', icon: IcoLaporan, label: 'Laporan' },
+  { to: '/produk', icon: IcoProduk, label: 'Produk' },
   { to: '/pengaturan', icon: IcoPengaturan, label: 'Lainnya' },
 ]
 
@@ -37,7 +39,7 @@ export default function Layout() {
   }
 
   // Page title from route
-  const pageTitles = { '/': 'Dashboard', '/transaksi': 'Transaksi', '/invoice': 'Invoice', '/laporan': 'Laba Rugi', '/kontak': 'Kontak', '/pengaturan': 'Pengaturan' }
+  const pageTitles = { '/': 'Dashboard', '/pos': 'POS Kasir', '/produk': 'Produk', '/transaksi': 'Transaksi', '/invoice': 'Invoice', '/laporan': 'Laba Rugi', '/kontak': 'Kontak', '/pengaturan': 'Pengaturan' }
   const pageTitle = pageTitles[location.pathname] || 'BukuKas'
 
   return (
@@ -52,6 +54,14 @@ export default function Layout() {
 
         <NavLink to="/" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <IcoDashboard size={17} /> Dashboard
+        </NavLink>
+
+        <div className="nav-section">Kasir</div>
+        <NavLink to="/pos" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <IcoPOS size={17} /> POS Kasir
+        </NavLink>
+        <NavLink to="/produk" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <IcoProduk size={17} /> Produk
         </NavLink>
 
         <div className="nav-section">Keuangan</div>
@@ -114,6 +124,13 @@ export default function Layout() {
 
         <NavLink to="/" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
           <IcoDashboard size={17} /> Dashboard
+        </NavLink>
+        <div className="nav-section">Kasir</div>
+        <NavLink to="/pos" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
+          <IcoPOS size={17} /> POS Kasir
+        </NavLink>
+        <NavLink to="/produk" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
+          <IcoProduk size={17} /> Produk
         </NavLink>
         <div className="nav-section">Keuangan</div>
         <NavLink to="/transaksi" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
