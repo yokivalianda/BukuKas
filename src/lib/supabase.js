@@ -71,7 +71,7 @@ export const tambahKontak = async (kontak) => {
 export const getInvoice = async (userId) => {
   const { data, error } = await supabase
     .from('invoice')
-    .select('*, kontak(nama)')
+    .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
   if (error) throw error
