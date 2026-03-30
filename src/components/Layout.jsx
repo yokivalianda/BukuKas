@@ -13,21 +13,28 @@ const IcoPOS = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 2
 const IcoProduk = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path d="M4 3a2 2 0 100 4h12a2 2 0 100-4H4zM3 9a1 1 0 000 2h.01a1 1 0 000-2H3zm4 0a1 1 0 000 2h6a1 1 0 000-2H7zm6 0a1 1 0 000 2h.01a1 1 0 000-2H13zM3 14a1 1 0 000 2h.01a1 1 0 000-2H3zm4 0a1 1 0 000 2h6a1 1 0 000-2H7zm6 0a1 1 0 000 2h.01a1 1 0 000-2H13z"/></svg>
 const IcoMenu = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/></svg>
 const IcoClose = () => <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
+const IcoJurnal = ({ size = 20 }) => <svg width={size} height={size} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 1a1 1 0 000 2h8a1 1 0 100-2H6zm0 4a1 1 0 000 2h8a1 1 0 100-2H6zm0 4a1 1 0 000 2h4a1 1 0 100-2H6z" clipRule="evenodd"/></svg>
 
-// Bottom nav items (5 utama untuk mobile)
 const bottomNavItems = [
   { to: '/', end: true, icon: IcoDashboard, label: 'Dashboard' },
   { to: '/pos', icon: IcoPOS, label: 'Kasir' },
   { to: '/transaksi', icon: IcoTransaksi, label: 'Transaksi' },
-  { to: '/produk', icon: IcoProduk, label: 'Produk' },
+  { to: '/jurnal', icon: IcoJurnal, label: 'Jurnal' },
   { to: '/pengaturan', icon: IcoPengaturan, label: 'Lainnya' },
 ]
+
+const NavItem = ({ to, end, icon: Icon, label, onClick }) => (
+  <NavLink to={to} end={end} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={onClick}>
+    <Icon size={17} /> {label}
+  </NavLink>
+)
 
 export default function Layout() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const close = () => setSidebarOpen(false)
 
   const namaUsaha = user?.user_metadata?.nama_usaha || 'Usaha Saya'
   const initials = namaUsaha.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
@@ -38,53 +45,52 @@ export default function Layout() {
     navigate('/auth')
   }
 
-  // Page title from route
-  const pageTitles = { '/': 'Dashboard', '/pos': 'POS Kasir', '/produk': 'Produk', '/transaksi': 'Transaksi', '/invoice': 'Invoice', '/laporan': 'Laba Rugi', '/kontak': 'Kontak', '/pengaturan': 'Pengaturan' }
+  const pageTitles = {
+    '/': 'Dashboard', '/pos': 'POS Kasir', '/produk': 'Produk', '/transaksi': 'Transaksi',
+    '/invoice': 'Invoice', '/laporan': 'Laba Rugi', '/kontak': 'Kontak', '/pengaturan': 'Pengaturan',
+    '/jurnal': 'Jurnal Transaksi', '/buku-besar': 'Buku Besar', '/neraca-saldo': 'Neraca Saldo',
+    '/jurnal-penyesuaian': 'Jurnal Penyesuaian', '/kertas-kerja': 'Kertas Kerja', '/laporan-keuangan': 'Laporan Keuangan',
+  }
   const pageTitle = pageTitles[location.pathname] || 'BukuKas'
+
+  const SidebarContent = ({ onNav }) => (
+    <>
+      <NavItem to="/" end icon={IcoDashboard} label="Dashboard" onClick={onNav} />
+
+      <div className="nav-section">Kasir</div>
+      <NavItem to="/pos" icon={IcoPOS} label="POS Kasir" onClick={onNav} />
+      <NavItem to="/produk" icon={IcoProduk} label="Produk" onClick={onNav} />
+
+      <div className="nav-section">Keuangan</div>
+      <NavItem to="/transaksi" icon={IcoTransaksi} label="Transaksi" onClick={onNav} />
+      <NavItem to="/invoice" icon={IcoInvoice} label="Invoice" onClick={onNav} />
+
+      <div className="nav-section">Akuntansi</div>
+      <NavItem to="/jurnal" icon={IcoJurnal} label="Jurnal Transaksi" onClick={onNav} />
+      <NavItem to="/buku-besar" icon={IcoJurnal} label="Buku Besar" onClick={onNav} />
+      <NavItem to="/neraca-saldo" icon={IcoLaporan} label="Neraca Saldo" onClick={onNav} />
+      <NavItem to="/jurnal-penyesuaian" icon={IcoJurnal} label="Jurnal Penyesuaian" onClick={onNav} />
+      <NavItem to="/kertas-kerja" icon={IcoLaporan} label="Kertas Kerja" onClick={onNav} />
+
+      <div className="nav-section">Laporan</div>
+      <NavItem to="/laporan-keuangan" icon={IcoLaporan} label="Laporan Keuangan" onClick={onNav} />
+      <NavItem to="/laporan" icon={IcoLaporan} label="Laba Rugi Cepat" onClick={onNav} />
+
+      <div className="nav-section">Lainnya</div>
+      <NavItem to="/kontak" icon={IcoKontak} label="Kontak" onClick={onNav} />
+      <NavItem to="/pengaturan" icon={IcoPengaturan} label="Pengaturan" onClick={onNav} />
+    </>
+  )
 
   return (
     <div className="app-layout">
-
       {/* ── DESKTOP SIDEBAR ─────────────────────────── */}
       <aside className="sidebar desktop-only">
         <div className="sidebar-logo">
           <div className="sidebar-logo-text">BukuKas</div>
           <div className="sidebar-logo-sub">Sistem Akuntansi</div>
         </div>
-
-        <NavLink to="/" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoDashboard size={17} /> Dashboard
-        </NavLink>
-
-        <div className="nav-section">Kasir</div>
-        <NavLink to="/pos" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoPOS size={17} /> POS Kasir
-        </NavLink>
-        <NavLink to="/produk" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoProduk size={17} /> Produk
-        </NavLink>
-
-        <div className="nav-section">Keuangan</div>
-        <NavLink to="/transaksi" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoTransaksi size={17} /> Transaksi
-        </NavLink>
-        <NavLink to="/invoice" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoInvoice size={17} /> Invoice
-        </NavLink>
-
-        <div className="nav-section">Laporan</div>
-        <NavLink to="/laporan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoLaporan size={17} /> Laba Rugi
-        </NavLink>
-
-        <div className="nav-section">Lainnya</div>
-        <NavLink to="/kontak" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoKontak size={17} /> Kontak
-        </NavLink>
-        <NavLink to="/pengaturan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <IcoPengaturan size={17} /> Pengaturan
-        </NavLink>
-
+        <SidebarContent onNav={null} />
         <div className="sidebar-bottom">
           <div className="sidebar-user">
             <div className="sidebar-avatar">{initials}</div>
@@ -99,58 +105,23 @@ export default function Layout() {
       {/* ── MOBILE TOPBAR ───────────────────────────── */}
       <div className="mobile-topbar mobile-only">
         <div className="mobile-topbar-left">
-          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
-            <IcoMenu />
-          </button>
+          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(true)}><IcoMenu /></button>
           <span className="mobile-topbar-title">{pageTitle}</span>
         </div>
         <div className="mobile-topbar-logo">BukuKas</div>
       </div>
 
-      {/* ── MOBILE DRAWER (slide-in sidebar) ────────── */}
-      {sidebarOpen && (
-        <div className="mobile-drawer-overlay" onClick={() => setSidebarOpen(false)} />
-      )}
+      {/* ── MOBILE DRAWER ────────── */}
+      {sidebarOpen && <div className="mobile-drawer-overlay" onClick={close} />}
       <aside className={`mobile-drawer ${sidebarOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-header">
           <div>
             <div className="sidebar-logo-text">BukuKas</div>
             <div className="sidebar-logo-sub">Sistem Akuntansi</div>
           </div>
-          <button className="mobile-menu-btn" onClick={() => setSidebarOpen(false)} style={{ color: 'rgba(255,255,255,0.7)' }}>
-            <IcoClose />
-          </button>
+          <button className="mobile-menu-btn" onClick={close} style={{ color: 'rgba(255,255,255,0.7)' }}><IcoClose /></button>
         </div>
-
-        <NavLink to="/" end className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoDashboard size={17} /> Dashboard
-        </NavLink>
-        <div className="nav-section">Kasir</div>
-        <NavLink to="/pos" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoPOS size={17} /> POS Kasir
-        </NavLink>
-        <NavLink to="/produk" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoProduk size={17} /> Produk
-        </NavLink>
-        <div className="nav-section">Keuangan</div>
-        <NavLink to="/transaksi" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoTransaksi size={17} /> Transaksi
-        </NavLink>
-        <NavLink to="/invoice" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoInvoice size={17} /> Invoice
-        </NavLink>
-        <div className="nav-section">Laporan</div>
-        <NavLink to="/laporan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoLaporan size={17} /> Laba Rugi
-        </NavLink>
-        <div className="nav-section">Lainnya</div>
-        <NavLink to="/kontak" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoKontak size={17} /> Kontak
-        </NavLink>
-        <NavLink to="/pengaturan" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} onClick={() => setSidebarOpen(false)}>
-          <IcoPengaturan size={17} /> Pengaturan
-        </NavLink>
-
+        <SidebarContent onNav={close} />
         <div className="sidebar-bottom">
           <div className="sidebar-user">
             <div className="sidebar-avatar">{initials}</div>
@@ -163,9 +134,7 @@ export default function Layout() {
       </aside>
 
       {/* ── MAIN CONTENT ────────────────────────────── */}
-      <main className="main-content">
-        <Outlet />
-      </main>
+      <main className="main-content"><Outlet /></main>
 
       {/* ── MOBILE BOTTOM NAV ───────────────────────── */}
       <nav className="bottom-nav mobile-only">
@@ -173,15 +142,12 @@ export default function Layout() {
           const isActive = end ? location.pathname === to : location.pathname.startsWith(to)
           return (
             <NavLink key={to} to={to} end={end} className="bottom-nav-item" style={{ color: isActive ? 'var(--accent2)' : 'var(--muted)' }}>
-              <div className={`bottom-nav-icon ${isActive ? 'active' : ''}`}>
-                <Icon size={22} />
-              </div>
+              <div className={`bottom-nav-icon ${isActive ? 'active' : ''}`}><Icon size={22} /></div>
               <span className="bottom-nav-label">{label}</span>
             </NavLink>
           )
         })}
       </nav>
-
     </div>
   )
 }
