@@ -88,6 +88,7 @@ export default function POS() {
       // Format items based on schema expectations
       const itemsPayload = cart.map(item => ({
         produk_id: item.produk_id,
+        nama: item.nama,
         qty: item.qty,
         harga_satuan: item.harga_satuan,
         subtotal: item.harga_satuan * item.qty

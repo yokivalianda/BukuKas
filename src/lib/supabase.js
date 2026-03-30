@@ -146,7 +146,13 @@ export const hapusProduk = async (id) => {
 
 // ─── POS CHECKOUT ─────────────────────────────────────────────────────────────
 export const posCheckout = async ({ p_user_id, p_total, p_uang_diterima, p_kembalian, p_items }) => {
-  // Simpan transaksi penjualan
+  const tanggal = new Date().toISOString().split('T')[0]
+  const namaItems = p_items.map(i => i.nama || '').filter(Boolean).join(', ')
+  const keterangan = namaItems
+    ? `POS: ${namaItems.length > 60 ? namaItems.slice(0, 57) + '...' : namaItems}`
+    : `Penjualan ${p_items.length} item`
+
+  // 1. Simpan transaksi utama
   const { data: tx, error: txError } = await supabase
     .from('transaksi')
     .insert({
@@ -154,14 +160,20 @@ export const posCheckout = async ({ p_user_id, p_total, p_uang_diterima, p_kemba
       jenis: 'pemasukan',
       jumlah: p_total,
       kategori: 'Penjualan POS',
-      keterangan: `Penjualan ${p_items.length} item`,
-      tanggal: new Date().toISOString().split('T')[0],
+      keterangan,
+      tanggal,
+      akun: 'Kas Tangan',
+      catatan: `Uang diterima: Rp ${p_uang_diterima.toLocaleString('id-ID')} | Kembalian: Rp ${p_kembalian.toLocaleString('id-ID')}`,
     })
     .select()
     .single()
-  if (txError) throw txError
 
-  // Simpan detail item penjualan
+  if (txError) {
+    console.error('POS txError:', txError)
+    throw new Error(`Gagal simpan transaksi: ${txError.message}`)
+  }
+
+  // 2. Simpan detail item POS
   const itemRows = p_items.map(item => ({
     user_id: p_user_id,
     transaksi_id: tx.id,
@@ -172,22 +184,39 @@ export const posCheckout = async ({ p_user_id, p_total, p_uang_diterima, p_kemba
   }))
 
   const { error: itemError } = await supabase.from('pos_item').insert(itemRows)
-  if (itemError) throw itemError
+  if (itemError) {
+    console.error('POS itemError:', itemError)
+    // Rollback: hapus transaksi yang sudah tersimpan
+    await supabase.from('transaksi').delete().eq('id', tx.id)
+    throw new Error(`Gagal simpan detail item: ${itemError.message}`)
+  }
 
-  // Kurangi stok produk
+  // 3. Update stok — pakai decrement langsung (atomic, tanpa race condition)
   for (const item of p_items) {
-    const { data: produk, error: getErr } = await supabase
-      .from('produk')
-      .select('stok')
-      .eq('id', item.produk_id)
-      .single()
-    if (getErr) throw getErr
+    const { error: stokErr } = await supabase.rpc('decrement_stok', {
+      p_produk_id: item.produk_id,
+      p_qty: item.qty,
+    })
 
-    const { error: stokErr } = await supabase
-      .from('produk')
-      .update({ stok: produk.stok - item.qty })
-      .eq('id', item.produk_id)
-    if (stokErr) throw stokErr
+    if (stokErr) {
+      // Fallback: manual update jika RPC belum ada
+      const { data: prod, error: getErr } = await supabase
+        .from('produk')
+        .select('stok')
+        .eq('id', item.produk_id)
+        .single()
+
+      if (getErr) {
+        console.error('POS get stok error:', getErr)
+        continue // lanjutkan, transaksi sudah tersimpan
+      }
+
+      const newStok = Math.max(0, (prod.stok || 0) - item.qty)
+      await supabase
+        .from('produk')
+        .update({ stok: newStok })
+        .eq('id', item.produk_id)
+    }
   }
 
   return tx
